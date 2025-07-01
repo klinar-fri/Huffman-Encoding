@@ -114,17 +114,17 @@ void heapifyDown(PriorityQueue* pq, int idx){
     int desni = 2 * idx + 2;
 
     if(levi < pq->size){
-        if(pq->tabela[levi]->teza < pq->tabela[najmanjsi]->teza ||
-           (pq->tabela[levi]->teza == pq->tabela[najmanjsi]->teza &&
-            lepsaMnozicaZnakov(pq->tabela[levi], pq->tabela[najmanjsi]) == 0)){
+        if(pq->tabela[levi]->teza < pq->tabela[najmanjsi]->teza){
+            najmanjsi = levi;
+        }else if(pq->tabela[levi]->teza == pq->tabela[najmanjsi]->teza && lepsaMnozicaZnakov(pq->tabela[levi], pq->tabela[najmanjsi]) == 0){
             najmanjsi = levi;
         }
     }
 
     if(desni < pq->size){
-        if(pq->tabela[desni]->teza < pq->tabela[najmanjsi]->teza ||
-           (pq->tabela[desni]->teza == pq->tabela[najmanjsi]->teza &&
-            lepsaMnozicaZnakov(pq->tabela[desni], pq->tabela[najmanjsi]) == 0)){
+        if(pq->tabela[desni]->teza < pq->tabela[najmanjsi]->teza){
+            najmanjsi = desni;
+        }else if(pq->tabela[desni]->teza == pq->tabela[najmanjsi]->teza && lepsaMnozicaZnakov(pq->tabela[desni], pq->tabela[najmanjsi]) == 0){
             najmanjsi = desni;
         }
     }
@@ -207,8 +207,6 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
                 }
             }
         }
-
-
 
         novoDrevo->mnozicaZnakov = novaMnozica;
         addToQueue(pq, novoDrevo);

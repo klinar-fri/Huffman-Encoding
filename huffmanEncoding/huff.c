@@ -3,19 +3,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-typedef struct huffDrevo huffDrevo;
-struct huffDrevo{
-    char* mnozicaZnakov;
-    int teza;
-    huffDrevo* levo;
-    huffDrevo* desno;
-};
-
-typedef struct PriorityQueue PriorityQueue;
-struct PriorityQueue{
-    huffDrevo** tabela;
-    int size;
-};
+#include "priorityQueue.h"
 
 void izpisiDrevoRek(huffDrevo* node, int nivo){
     if(node == NULL){
@@ -35,20 +23,9 @@ void izpisiDrevoRek(huffDrevo* node, int nivo){
     izpisiDrevoRek(node->desno, nivo + 1);
 }
 
-
 void izpisiHuffNode(huffDrevo* curr){
     printf("%s/%d\n", curr->mnozicaZnakov, curr->teza);
 }
-
-// vrne 0, če je prva lepša in 1 če je druga lepša
-int lepsaMnozicaZnakov(huffDrevo* prvi, huffDrevo* drugi){
-    if(prvi->mnozicaZnakov[0] < drugi->mnozicaZnakov[0]){
-        return 0;
-    }else{
-        return 1;
-    }
-}
-
 
 void izpisiDrevo(huffDrevo** tabDreves, int idx){
     bool prvi = true;
@@ -63,92 +40,34 @@ void izpisiDrevo(huffDrevo** tabDreves, int idx){
     printf("\n");
 }
 
-/*
-
-// Prepočasi + ne uporabljamo prioritiy queue
-
-void sortTabDreves(huffDrevo** tabDreves, int idx){
-    // bubble sort
-    for(int i = 0; i < idx; i++){
-        for(int j = 0; j < idx - 1 - i; j++){
-             if(tabDreves[j]->teza > tabDreves[j + 1]->teza){
-                huffDrevo* tmp = tabDreves[j];
-                tabDreves[j] = tabDreves[j + 1];
-                tabDreves[j + 1] = tmp;
-            }else if(tabDreves[j]->teza == tabDreves[j + 1]->teza){
-                if(lepsaMnozicaZnakov(tabDreves[j], tabDreves[j + 1]) == 1){
-                    huffDrevo* tmp = tabDreves[j];
-                    tabDreves[j] = tabDreves[j + 1];
-                    tabDreves[j + 1] = tmp;
-                }
-            }
-        }
+void charToBin(int num, char* bits){
+    for(int i = 7; i >= 0; i--){
+        bits[i] = num % 2 + '0';
+        num = num / 2;
     }
 }
-*/
 
-void swap(huffDrevo* a, huffDrevo* b){
-    huffDrevo tmp = *a;
-    *a = *b;
-    *b = tmp;
-}
-
-void heapifyUp(PriorityQueue* pq, int idx){
-    if(idx == 0){
-        return; // koren : stop
+void zapisHuffDrevesa(huffDrevo* koren){
+    if(koren == NULL){
+        return;
+    }
+    if(koren->levo == NULL && koren->desno == NULL){
+        printf("1");
+        char* currBits = calloc(9, sizeof(char));
+        charToBin(koren->mnozicaZnakov[0], currBits);
+        printf("%s", currBits);
+        free(currBits);
+        // printf("%d", koren->mnozicaZnakov[0]);
     }else{
-        int parentIdx = (idx - 1) / 2;
-        if(pq->tabela[idx]->teza < pq->tabela[parentIdx]->teza){
-            swap(pq->tabela[idx], pq->tabela[parentIdx]);
-            heapifyUp(pq, parentIdx);
-        }else if(pq->tabela[idx]->teza == pq->tabela[parentIdx]->teza && lepsaMnozicaZnakov(pq->tabela[idx], pq->tabela[parentIdx]) == 0){
-            swap(pq->tabela[idx], pq->tabela[parentIdx]);
-            heapifyUp(pq, parentIdx);
-        }
+        printf("0");
     }
+    zapisHuffDrevesa(koren->levo);
+    zapisHuffDrevesa(koren->desno);
 }
 
-void heapifyDown(PriorityQueue* pq, int idx){
-    int najmanjsi = idx;
-    int levi = 2 * idx + 1;
-    int desni = 2 * idx + 2;
+// void kodiraniNiz(huffDrevo* koren, char* prvotniNiz){
 
-    if(levi < pq->size){
-        if(pq->tabela[levi]->teza < pq->tabela[najmanjsi]->teza){
-            najmanjsi = levi;
-        }else if(pq->tabela[levi]->teza == pq->tabela[najmanjsi]->teza && lepsaMnozicaZnakov(pq->tabela[levi], pq->tabela[najmanjsi]) == 0){
-            najmanjsi = levi;
-        }
-    }
-
-    if(desni < pq->size){
-        if(pq->tabela[desni]->teza < pq->tabela[najmanjsi]->teza){
-            najmanjsi = desni;
-        }else if(pq->tabela[desni]->teza == pq->tabela[najmanjsi]->teza && lepsaMnozicaZnakov(pq->tabela[desni], pq->tabela[najmanjsi]) == 0){
-            najmanjsi = desni;
-        }
-    }
-
-    if(najmanjsi != idx){
-        swap(pq->tabela[idx], pq->tabela[najmanjsi]);
-        heapifyDown(pq, najmanjsi);
-    }
-}
-
-
-// adds element curr to the queue according to the priority in heapifyUp
-void addToQueue(PriorityQueue* pq, huffDrevo* curr){
-    pq->tabela[pq->size++] = curr;
-    heapifyUp(pq, pq->size - 1);
-}
-
-// removes the first element from the Queue and restores the heap priority of the queue
-huffDrevo* removeFromQueue(PriorityQueue* pq){
-    huffDrevo* min = pq->tabela[0];
-    pq->tabela[0] = pq->tabela[--pq->size];
-    heapifyDown(pq, 0);
-    return min;
-}
+// }
 
 void kodiraj(char* imeVhodne, char* imeIzhodne){
     FILE* input = fopen(imeVhodne, "r");
@@ -188,8 +107,17 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
         huffDrevo* l = removeFromQueue(pq);
         huffDrevo* d = removeFromQueue(pq);
         huffDrevo* novoDrevo = malloc(sizeof(huffDrevo));
-        novoDrevo->levo = l;
-        novoDrevo->desno = d;
+
+        // tukaj bil bug, to sem pozabil preveriti, ker zgleda v
+        // zg funkcijah nekaj ni čisto ok
+        if(lepsaMnozicaZnakov(l, d) == 0){
+            novoDrevo->levo = l;
+            novoDrevo->desno = d;
+        }else{
+            novoDrevo->levo = d;
+            novoDrevo->desno = l;
+        }
+        
         novoDrevo->teza = l->teza + d->teza;
         char* novaMnozica = calloc(128, sizeof(char));
         novaMnozica[0] = '\0';
@@ -213,7 +141,10 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
     }
 
     // izpisiDrevo(pq->tabela, pq->size);
-    izpisiDrevoRek(pq->tabela[0], 0);
+    //izpisiDrevoRek(pq->tabela[0], 0);
+    zapisHuffDrevesa(pq->tabela[0]);
+    // kodiraniNiz(pq->tabela[0]);
+    printf("\n");
     fclose(input);
 }
 

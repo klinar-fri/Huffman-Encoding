@@ -2,3 +2,4 @@ javni/
 skriti/
 huffmanEncoding/*
 !huffmanEncoding/huff.c
+!huffmanEncoding/priorityQueue.h

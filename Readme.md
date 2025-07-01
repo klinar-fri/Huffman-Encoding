@@ -1,2 +1,2 @@
 # Huffman Encoding
-- Huffman encoding imeplemtation, from uni-lj task sheet.
+- Huffman encoding imeplemtation, from prog2 - task sheet.

@@ -1,0 +1,4 @@
+javni/
+skriti/
+huffmanEncoding/*
+!huffmanEncoding/huff.c

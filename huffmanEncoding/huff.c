@@ -3,67 +3,12 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "printTree.h"
 #include "priorityQueue.h"
 
-void izpisiDrevoRek(huffDrevo* node, int nivo){
-    if(node == NULL){
-        return;
-    }
-    for(int i = 0; i < nivo - 1; i++){
-        printf("|  ");
-    }
-    if(nivo != 0){
-        printf("+-- %s/%d\n", node->mnozicaZnakov, node->teza);
-    }else{
-        printf("%s/%d\n", node->mnozicaZnakov, node->teza);
-    }
-
-
-    izpisiDrevoRek(node->levo, nivo + 1);
-    izpisiDrevoRek(node->desno, nivo + 1);
-}
-
-void izpisiHuffNode(huffDrevo* curr){
-    printf("%s/%d\n", curr->mnozicaZnakov, curr->teza);
-}
-
-void izpisiDrevo(huffDrevo** tabDreves, int idx){
-    bool prvi = true;
-    for(int i = 0; i < idx; i++){
-        if(prvi){
-            printf("%s/%d", tabDreves[i]->mnozicaZnakov, tabDreves[i]->teza);
-            prvi = false;
-        }else{
-            printf(" %s/%d", tabDreves[i]->mnozicaZnakov, tabDreves[i]->teza);
-        }
-    }
-    printf("\n");
-}
-
-void charToBin(int num, char* bits){
-    for(int i = 7; i >= 0; i--){
-        bits[i] = num % 2 + '0';
-        num = num / 2;
-    }
-}
-
-void zapisHuffDrevesa(huffDrevo* koren){
-    if(koren == NULL){
-        return;
-    }
-    if(koren->levo == NULL && koren->desno == NULL){
-        printf("1");
-        char* currBits = calloc(9, sizeof(char));
-        charToBin(koren->mnozicaZnakov[0], currBits);
-        printf("%s", currBits);
-        free(currBits);
-        // printf("%d", koren->mnozicaZnakov[0]);
-    }else{
-        printf("0");
-    }
-    zapisHuffDrevesa(koren->levo);
-    zapisHuffDrevesa(koren->desno);
-}
+#define PRINT_TREE_BIN 0 
+#define PRINT_TREE_REC 0
+#define PRINT_TREE_ROOT 0
 
 // void kodiraniNiz(huffDrevo* koren, char* prvotniNiz){
 
@@ -124,7 +69,7 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
         strcat(novaMnozica, l->mnozicaZnakov);
         strcat(novaMnozica, d->mnozicaZnakov);
 
-        // Sort the combined character set
+        // bubble sort mnozica
         int len = strlen(novaMnozica);
         for (int i = 0; i < len - 1; i++) {
             for (int j = 0; j < len - 1 - i; j++) {
@@ -140,11 +85,18 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
         addToQueue(pq, novoDrevo);
     }
 
-    // izpisiDrevo(pq->tabela, pq->size);
-    //izpisiDrevoRek(pq->tabela[0], 0);
+    #if PRINT_TREE_REC
+    izpisiDrevoRek(pq->tabela[0], 0);
+    #endif
+    #if PRINT_TREE_BIN
     zapisHuffDrevesa(pq->tabela[0]);
-    // kodiraniNiz(pq->tabela[0]);
     printf("\n");
+    #endif
+    #if PRINT_TREE_ROOT
+    izpisiDrevo(pq->tabela, pq->size);
+    #endif
+
+    // kodiraniNiz(pq->tabela[0]);
     fclose(input);
 }
 

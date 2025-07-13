@@ -3,3 +3,4 @@ skriti/
 huffmanEncoding/*
 !huffmanEncoding/huff.c
 !huffmanEncoding/priorityQueue.h
+!huffmanEncoding/printTree.h

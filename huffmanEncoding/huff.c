@@ -7,7 +7,7 @@
 #include "priorityQueue.h"
 
 #define PRINT_TREE_BIN 0 
-#define PRINT_TREE_REC 0
+#define PRINT_TREE_REC 1
 #define PRINT_TREE_ROOT 0
 
 // void kodiraniNiz(huffDrevo* koren, char* prvotniNiz){
@@ -87,12 +87,10 @@ void kodiraj(char* imeVhodne, char* imeIzhodne){
 
     #if PRINT_TREE_REC
     izpisiDrevoRek(pq->tabela[0], 0);
-    #endif
-    #if PRINT_TREE_BIN
+    #elif PRINT_TREE_BIN
     zapisHuffDrevesa(pq->tabela[0]);
     printf("\n");
-    #endif
-    #if PRINT_TREE_ROOT
+    #elif PRINT_TREE_ROOT
     izpisiDrevo(pq->tabela, pq->size);
     #endif
 
